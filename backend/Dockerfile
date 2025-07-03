@@ -20,7 +20,7 @@ COPY backend/ .
 RUN chmod +r constants.cjs
 
 # Expose port
-EXPOSE 3001
+EXPOSE 8080
 
 # Start the server
 CMD ["node", "server.js"]
