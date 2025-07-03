@@ -210,7 +210,7 @@ server.listen(PORT, async () => {
     // On first start, if db is empty, populate it with default questions
     if (!db.data.questions || db.data.questions.length === 0) {
         try {
-            const { QUIZ_QUESTIONS } = require('../frontend/constants.js');
+            const { QUIZ_QUESTIONS } = await import('/usr/src/frontend/constants.js');
             db.data.questions = QUIZ_QUESTIONS;
             await db.write();
             console.log('Database initialized with default questions.');
