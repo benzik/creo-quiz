@@ -22,6 +22,11 @@ await db.read();
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Health check endpoint for Docker
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
