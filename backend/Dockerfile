@@ -15,7 +15,10 @@ RUN npm install
 
 # Copy backend files
 COPY backend/ .
-COPY frontend/constants.js ../frontend/constants.js
+
+# Create frontend directory and copy constants
+RUN mkdir -p /usr/src/frontend
+COPY frontend/constants.js /usr/src/frontend/constants.js
 
 # Expose port
 EXPOSE 3001
