@@ -8,9 +8,12 @@ import { nanoid } from 'nanoid';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import { createRequire } from 'module';
 
 // --- SETUP ---
 const __dirname = dirname(fileURLToPath(import.meta.url));
+// Создаем функцию require для загрузки CommonJS модулей
+const require = createRequire(import.meta.url);
 // The database will be stored in a persistent volume mounted at /usr/src/app/data
 const file = join('/usr/src/app/data', 'db.json');
 
@@ -212,9 +215,7 @@ server.listen(PORT, async () => {
     if (!db.data.questions || db.data.questions.length === 0) {
         try {
             // Загружаем константы из локального CommonJS файла
-            const constantsPath = join(__dirname, 'constants.cjs');
-            const constantsContent = fs.readFileSync(constantsPath, 'utf8');
-            const QUIZ_QUESTIONS = eval(`(${constantsContent.split('module.exports =')[1].trim()})`).QUIZ_QUESTIONS;
+            const { QUIZ_QUESTIONS } = require('./constants.cjs');
             db.data.questions = QUIZ_QUESTIONS;
             await db.write();
             console.log('Database initialized with default questions.');
