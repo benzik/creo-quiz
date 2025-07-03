@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # Frontend service
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - quiz-network
+    environment:
+      - BACKEND_URL=http://backend:3001
+
+  # Backend service
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+    volumes:
+      - quiz-data:/usr/src/app/data
+    networks:
+      - quiz-network
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+
+networks:
+  quiz-network:
+    driver: bridge
+
+volumes:
+  quiz-data:
+    driver: local
