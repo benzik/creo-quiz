@@ -209,7 +209,7 @@ io.on('connection', (socket) => {
 
 
 // --- START SERVER ---
-const PORT = 3001;
+const PORT = process.env.PORT || 8080;
 server.listen(PORT, async () => {
     // On first start, if db is empty, populate it with default questions
     if (!db.data.questions || db.data.questions.length === 0) {
