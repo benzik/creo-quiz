@@ -22,6 +22,9 @@ RUN apk --no-cache add curl
 # Copy built files from build stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# Verify files were copied correctly
+RUN ls -la /usr/share/nginx/html && echo "Files in HTML directory"
+
 # Copy nginx configuration
 COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
