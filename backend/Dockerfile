@@ -13,12 +13,11 @@ RUN mkdir -p /usr/src/app/data
 COPY backend/package*.json ./
 RUN npm install
 
-# Copy backend files
+# Copy backend files and constants
 COPY backend/ .
 
-# Create frontend directory and copy constants
-RUN mkdir -p /usr/src/frontend
-COPY frontend/constants.js /usr/src/frontend/constants.js
+# Make sure constants.cjs is included and has correct permissions
+RUN chmod +r constants.cjs
 
 # Expose port
 EXPOSE 3001

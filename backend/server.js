@@ -7,6 +7,7 @@ import { JSONFile } from 'lowdb/node';
 import { nanoid } from 'nanoid';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 // --- SETUP ---
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -210,7 +211,10 @@ server.listen(PORT, async () => {
     // On first start, if db is empty, populate it with default questions
     if (!db.data.questions || db.data.questions.length === 0) {
         try {
-            const { QUIZ_QUESTIONS } = await import('/usr/src/frontend/constants.js');
+            // Загружаем константы из локального CommonJS файла
+            const constantsPath = join(__dirname, 'constants.cjs');
+            const constantsContent = fs.readFileSync(constantsPath, 'utf8');
+            const QUIZ_QUESTIONS = eval(`(${constantsContent.split('module.exports =')[1].trim()})`).QUIZ_QUESTIONS;
             db.data.questions = QUIZ_QUESTIONS;
             await db.write();
             console.log('Database initialized with default questions.');
