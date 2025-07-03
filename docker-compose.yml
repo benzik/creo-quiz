@@ -7,14 +7,14 @@ services:
       context: .
       dockerfile: ./frontend/Dockerfile
     ports:
-      - "9753:80"
+      - "80:80"
     restart: unless-stopped
     depends_on:
       - backend
     networks:
       - quiz-network
     environment:
-      - BACKEND_URL=http://backend:3002
+      - BACKEND_URL=http://backend:8080
 
   # Backend service
   backend:
@@ -22,14 +22,14 @@ services:
       context: .
       dockerfile: ./backend/Dockerfile
     ports:
-      - "3002:3002"
+      - "8080:8080"
     restart: unless-stopped
     volumes:
       - quiz-data:/usr/src/app/data
     networks:
       - quiz-network
     environment:
-      - PORT=3002
+      - PORT=8080
       - NODE_ENV=production
 
 networks:
