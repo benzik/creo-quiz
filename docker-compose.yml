@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   # Frontend service
@@ -12,9 +12,13 @@ services:
     depends_on:
       - backend
     networks:
-      - quiz-network
+      quiz-network:
+        # Без явного приоритета, так как это не критично для фронтенда
     environment:
       - BACKEND_URL=http://backend:8080
+    labels:
+      - "com.creo-quiz.description=Frontend service for Quiz application"
+      - "com.creo-quiz.service=frontend"
 
   # Backend service
   backend:
@@ -27,15 +31,29 @@ services:
     volumes:
       - quiz-data:/usr/src/app/data
     networks:
-      - quiz-network
+      quiz-network:
+        # Без явного приоритета, так как это не критично для бэкенда
     environment:
       - PORT=8080
       - NODE_ENV=production
+    labels:
+      - "com.creo-quiz.description=Backend service for Quiz application"
+      - "com.creo-quiz.service=backend"
 
 networks:
   quiz-network:
+    name: creo-quiz-network  # Явное именование сети для предсказуемости в Portainer
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16  # Явное указание подсети для предсказуемой адресации
+    labels:
+      - "com.creo-quiz.description=Network for Quiz application services"
 
 volumes:
   quiz-data:
+    name: creo-quiz-data  # Явное именование тома для предсказуемости в Portainer
+    labels:
+      - "com.creo-quiz.description=Data volume for Quiz application"
     driver: local
