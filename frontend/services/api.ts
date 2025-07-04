@@ -12,7 +12,7 @@ async function handleResponse(response: Response) {
 }
 
 export async function login(password: string): Promise<{ success: boolean }> {
-    const response = await fetch(`${API_URL}/login`, {
+    const response = await fetch(`/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),

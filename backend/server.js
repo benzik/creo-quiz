@@ -55,7 +55,7 @@ const emitGameState = (gameId) => {
 // --- API ROUTES ---
 
 // Admin Login
-app.post('/login', (req, res) => {
+app.post('/api/login', (req, res) => {
   const { password } = req.body;
   if (password === ADMIN_PASSWORD) {
     res.json({ success: true });
