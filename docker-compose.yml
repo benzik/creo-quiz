@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: ./frontend/Dockerfile
     ports:
-      - "8081:80"
+      - "9753:80"
     restart: unless-stopped
     depends_on:
       - backend
@@ -22,7 +22,7 @@ services:
       context: .
       dockerfile: ./backend/Dockerfile
     ports:
-      - "8080:8080"
+      - "9754:8080"
     restart: unless-stopped
     volumes:
       - quiz-data:/usr/src/app/data

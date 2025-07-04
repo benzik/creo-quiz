@@ -1,99 +1,104 @@
-# Interactive Quiz Application
+# Creo Quiz Application
 
-An interactive quiz application with real-time functionality, built with React and Socket.IO. This application allows creating quiz sessions where participants can join and answer questions in real-time, with immediate feedback and results visualization.
+Интерактивное приложение для проведения викторин с функциональностью реального времени, построенное на React и Socket.IO. Это приложение позволяет преподавателям создавать сессии викторин, к которым ученики могут присоединяться и отвечать на вопросы в реальном времени, с немедленной обратной связью и визуализацией результатов.
 
-## Features
+## Возможности
 
-- Real-time quiz sessions with Socket.IO
-- Admin panel for quiz management
-- Interactive question cards with multiple-choice answers
-- Results visualization with charts
-- Session management for multiple concurrent games
-- Responsive design for various devices
+- Викторины в реальном времени с использованием Socket.IO
+- Панель администратора (преподавателя) для управления викторинами
+- Интерактивные карточки вопросов с вариантами ответов
+- Визуализация результатов с помощью графиков
+- Управление сессиями для нескольких одновременных игр
+- Адаптивный дизайн для различных устройств
+- Полный набор из 42 вопросов по тематике VSL-монтажа
 
-## Tech Stack
+## Технический стек
 
-- **Frontend**: React 19, TypeScript, Vite
+- **Frontend**: React, TypeScript, Vite
 - **Backend**: Express.js, Socket.IO
-- **Database**: LowDB (JSON file-based database)
-- **Containerization**: Docker
+- **Database**: LowDB (база данных на основе JSON-файлов)
+- **Containerization**: Docker и Docker Compose
 
-## Prerequisites
+## Требования
 
-- Node.js (v18 or higher)
-- npm or yarn
-- Docker and Docker Compose (optional, for containerized deployment)
+- Docker и Docker Compose (для контейнеризованного развертывания)
+- Или Node.js (v18 или выше) для локальной разработки
 
-## Installation
+## Установка
 
-1. Clone the repository:
+1. Клонируйте репозиторий:
    ```bash
-   git clone https://github.com/yourusername/interactive-quiz.git
-   cd interactive-quiz
+   git clone https://github.com/yourusername/creo-quiz.git
+   cd creo-quiz
    ```
 
-2. Install dependencies:
+2. Запустите приложение с помощью Docker Compose (рекомендуется):
    ```bash
-   npm install
+   docker-compose up -d
    ```
 
-3. Create a `.env.local` file in the root directory with the following content:
+## Запуск приложения
+
+### Использование Docker (рекомендуется)
+
+Запустите приложение с помощью Docker Compose:
+```bash
+docker-compose up -d
+```
+
+Приложение будет доступно по следующим адресам:
+- Фронтенд: http://localhost:9753
+- Бэкенд API: http://localhost:9754
+
+### Режим разработки (альтернативно)
+
+Если вы хотите запустить приложение в режиме разработки без Docker:
+
+1. Установите зависимости в директориях frontend и backend:
+   ```bash
+   cd frontend && npm install
+   cd ../backend && npm install
    ```
-   GEMINI_API_KEY=your_api_key_here
+
+2. Запустите бэкенд:
+   ```bash
+   cd backend && npm start
    ```
 
-## Running the Application
+3. В отдельном терминале запустите фронтенд:
+   ```bash
+   cd frontend && npm run dev
+   ```
 
-### Development Mode
+## Использование приложения
 
-Start the development server:
-```bash
-npm run dev
-```
+### Роль преподавателя
 
-The application will be available at http://localhost:5173
+1. Откройте приложение в браузере: http://localhost:9753
+2. Нажмите на кнопку "Создать игру" или "Войти как администратор"
+3. Создайте новую игру и получите код игры для учеников
+4. Управляйте ходом викторины: запускайте вопросы, показывайте результаты и переходите к следующим вопросам
 
-### Production Build
+### Роль ученика
 
-Build the application:
-```bash
-npm run build
-```
+1. Откройте приложение в браузере: http://localhost:9753
+2. Введите код игры, предоставленный преподавателем
+3. Введите свое имя для участия в викторине
+4. Отвечайте на вопросы, когда они появляются на экране
+5. Просматривайте результаты после каждого вопроса
 
-Preview the production build:
-```bash
-npm run preview
-```
+## Структура проекта
 
-### Using Docker
+- `/frontend` - Код фронтенда на React/TypeScript
+  - `/components` - React-компоненты
+  - `/views` - Компоненты страниц
+  - `/hooks` - Пользовательские React-хуки
+  - `/services` - API-сервисы
+- `/backend` - Серверный код на Express.js и Socket.IO
+  - `server.js` - Основной файл сервера
+  - `constants.cjs` - Константы, включая 42 вопроса для викторины
+- `docker-compose.yml` - Конфигурация Docker Compose для запуска приложения
 
-You can also run the application using Docker:
-```bash
-docker-compose up
-```
-
-### Deployment with Portainer Stack
-
-This project is configured for easy deployment using Portainer Stack with Git repository:
-
-1. In your Portainer interface, go to Stacks and click "Add stack"
-2. Choose "Git repository" as the build method
-3. Enter your Git repository URL
-4. Set the reference to your branch (e.g., main)
-5. Set the compose path to `docker-compose.yml`
-6. Click "Deploy the stack"
-
-Portainer will automatically pull the repository and deploy the services defined in the docker-compose.yml file.
-
-## Project Structure
-
-- `/components` - React components
-- `/views` - Page components
-- `/hooks` - Custom React hooks
-- `/services` - API services
-- `/state` - State management
-- `/backend` - Express server and Socket.IO implementation
-- `/frontend` - Frontend-specific code
 
 
 ## License
