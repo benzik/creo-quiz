@@ -66,7 +66,12 @@ app.post('/login', (req, res) => {
 
 // Get all questions
 app.get('/questions', (req, res) => {
-  res.json(db.data.questions);
+  // Преобразование поля correctAnswer в correctAnswerIndex для фронтенда
+  const questions = db.data.questions.map(q => ({
+    ...q,
+    correctAnswerIndex: q.correctAnswer !== undefined ? q.correctAnswer : q.correctAnswerIndex
+  }));
+  res.json(questions);
 });
 
 // Save all questions
@@ -75,7 +80,13 @@ app.post('/questions', async (req, res) => {
   if (!Array.isArray(questions)) {
     return res.status(400).json({ error: 'Invalid data format' });
   }
-  db.data.questions = questions;
+  
+  // Преобразование поля correctAnswerIndex в correctAnswer для бэкенда
+  db.data.questions = questions.map(q => ({
+    ...q,
+    correctAnswer: q.correctAnswerIndex !== undefined ? q.correctAnswerIndex : (q.correctAnswer || 0)
+  }));
+  
   await db.write();
   res.json({ success: true });
 });

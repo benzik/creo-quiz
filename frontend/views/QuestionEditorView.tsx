@@ -17,6 +17,22 @@ const QuestionEditorView: React.FC<QuestionEditorViewProps> = ({ onExit }) => {
     try {
       setIsLoading(true);
       const fetchedQuestions = await api.getQuestions();
+      
+      // Отладочный код - проверяем данные вопросов
+      console.log('Полученные вопросы:', fetchedQuestions);
+      console.log('Первый вопрос имеет correctAnswerIndex?', fetchedQuestions[0]?.correctAnswerIndex !== undefined);
+      // Используем any для доступа к полю, которого нет в типе Question
+      console.log('Первый вопрос имеет correctAnswer?', (fetchedQuestions[0] as any)?.correctAnswer !== undefined);
+      console.log('Значение correctAnswerIndex первого вопроса:', fetchedQuestions[0]?.correctAnswerIndex);
+      
+      // Проверяем тип данных correctAnswerIndex
+      console.log('Тип данных correctAnswerIndex:', typeof fetchedQuestions[0]?.correctAnswerIndex);
+      
+      // Дополнительная проверка первых 5 вопросов
+      for (let i = 0; i < Math.min(5, fetchedQuestions.length); i++) {
+        console.log(`Вопрос ${i+1}: id=${fetchedQuestions[i].id}, correctAnswerIndex=${fetchedQuestions[i].correctAnswerIndex}`);
+      }
+      
       setQuestions(fetchedQuestions);
     } catch (err: any) {
       setError(err.message || 'Не удалось загрузить вопросы');
@@ -113,7 +129,7 @@ const QuestionEditorView: React.FC<QuestionEditorViewProps> = ({ onExit }) => {
                   <input
                     type="radio"
                     name={`correct-answer-${q.id}`}
-                    checked={q.correctAnswerIndex === optIndex}
+                    checked={Number(q.correctAnswerIndex) === optIndex}
                     onChange={() => handleCorrectAnswerChange(q.id, optIndex)}
                     className="form-radio h-5 w-5 text-green-500 bg-gray-700 border-gray-600 focus:ring-green-500"
                   />
@@ -121,7 +137,7 @@ const QuestionEditorView: React.FC<QuestionEditorViewProps> = ({ onExit }) => {
                     type="text"
                     value={opt}
                     onChange={(e) => handleOptionChange(q.id, optIndex, e.target.value)}
-                    className={`w-full p-2 rounded border text-white ${q.correctAnswerIndex === optIndex ? 'bg-green-900/50 border-green-500' : 'bg-gray-700 border-gray-600'} focus:border-indigo-500 outline-none`}
+                    className={`w-full p-2 rounded border text-white ${Number(q.correctAnswerIndex) === optIndex ? 'bg-green-900/50 border-green-500' : 'bg-gray-700 border-gray-600'} focus:border-indigo-500 outline-none`}
                   />
                 </div>
               ))}

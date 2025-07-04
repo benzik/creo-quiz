@@ -22,14 +22,26 @@ export async function login(password: string): Promise<{ success: boolean }> {
 
 export async function getQuestions(): Promise<Question[]> {
     const response = await fetch(`${API_URL}/questions`);
-    return handleResponse(response);
+    const data = await handleResponse(response);
+    
+    // Преобразование из формата бэкенда (correctAnswer) в формат фронтенда (correctAnswerIndex)
+    return data.map((q: any) => ({
+        ...q,
+        correctAnswerIndex: q.correctAnswer !== undefined ? q.correctAnswer : q.correctAnswerIndex
+    }));
 }
 
 export async function saveAllQuestions(questions: Question[]): Promise<{ success: boolean }> {
+    // Преобразование из формата фронтенда (correctAnswerIndex) в формат бэкенда (correctAnswer)
+    const backendQuestions = questions.map(q => ({
+        ...q,
+        correctAnswer: q.correctAnswerIndex
+    }));
+    
     const response = await fetch(`${API_URL}/questions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ questions }),
+        body: JSON.stringify({ questions: backendQuestions }),
     });
     return handleResponse(response);
 }
