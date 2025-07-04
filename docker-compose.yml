@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: ./frontend/Dockerfile
     ports:
-      - "8080:80"  # Используем порт 8080 для фронтенда
+      - "9753:80"  # Возвращаем предыдущий порт для фронтенда
     restart: always  # Изменено на always для автоматического перезапуска
     depends_on:
       - backend
@@ -26,7 +26,7 @@ services:
       context: .
       dockerfile: ./backend/Dockerfile
     ports:
-      - "8081:8080"  # Используем порт 8081 для бэкенда
+      - "9754:8080"  # Возвращаем предыдущий порт для бэкенда
     restart: always  # Изменено на always для автоматического перезапуска
     volumes:
       - quiz-data:/app/data  # Исправлен путь к тому
