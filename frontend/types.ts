@@ -2,8 +2,15 @@ export interface Question {
   id: string;
   questionText: string;
   options: string[];
-  correctAnswerIndex: number;
+  correctAnswer: number;
   explanation: string;
+}
+
+export interface Quiz {
+  id: string;
+  name: string;
+  description: string;
+  questions: Question[];
 }
 
 export interface Player {
@@ -19,6 +26,9 @@ export interface AnswerDistribution {
 
 export interface GameState {
   id: string;
+  quizId: string;
+  quizName: string;
+  quizDescription: string;
   phase: GamePhase;
   players: Player[];
   questions: Question[];

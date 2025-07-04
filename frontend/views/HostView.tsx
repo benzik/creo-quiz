@@ -1,7 +1,7 @@
 import React from 'react';
 import useSocket from '../hooks/useSocket';
 import * as api from '../services/api';
-import { Player, AnswerDistribution, Question, GameState } from '../types.ts';
+import { Player, AnswerDistribution, Question } from '../types.ts';
 import BarChart from '../components/BarChart';
 
 interface HostViewProps {
@@ -100,7 +100,7 @@ const ResultsScreen: React.FC<{question: Question, questions: Question[], answer
     return (
         <div>
             <h2 className="text-2xl font-bold text-white mb-4">{question.questionText}</h2>
-            <BarChart distribution={answerDistribution} options={question.options} correctAnswerIndex={question.correctAnswerIndex} totalPlayers={totalPlayers} />
+            <BarChart distribution={answerDistribution} options={question.options} correctAnswer={question.correctAnswer} totalPlayers={totalPlayers} />
             <div className="mt-6 bg-gray-900/50 p-4 rounded-lg ring-1 ring-gray-700">
                 <h3 className="text-lg font-bold text-indigo-300 mb-2">Пояснение:</h3>
                 <p className="text-gray-200 leading-relaxed">{question.explanation}</p>

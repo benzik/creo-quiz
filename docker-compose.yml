@@ -5,7 +5,9 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: ./frontend/Dockerfile
+      dockerfile: frontend/Dockerfile
+      args:
+        - CACHE_BUSTER=${CACHE_BUSTER}
     ports:
       - "9753:80"  # Возвращаем предыдущий порт для фронтенда
     restart: always  # Изменено на always для автоматического перезапуска

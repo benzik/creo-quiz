@@ -1,6 +1,11 @@
 // CommonJS version of quiz questions for backend
 
-exports.QUIZ_QUESTIONS = [] = [
+exports.DEFAULT_QUIZZES = [
+  {
+    id: 'default-vsl-quiz',
+    name: 'Викторина по VSL',
+    description: 'Проверьте свои знания по созданию высококонверсионных Video Sales Letters. Эта викторина охватывает ключевые принципы от зацепа до закрытия.',
+    questions: [
   {
     id: 'q-initial-1',
     questionText: "Что такое VSL (Video Sales Letter)?",
@@ -504,5 +509,7 @@ exports.QUIZ_QUESTIONS = [] = [
     ],
     correctAnswer: 2,
     explanation: "Вывод №3: 'Темп и ритм — ваши главные инструменты'. Управляя скоростью монтажа в зависимости от задачи блока (быстрый хук, плавная история), вы управляете вниманием и энергией зрителя."
+  }
+    ]
   }
 ];

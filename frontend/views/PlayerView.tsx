@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import useSocket from '../hooks/useSocket';
 import * as api from '../services/api';
-import { GameState, Question, Player } from '../types.ts';
+import { Question, Player } from '../types.ts';
 import Spinner from '../components/Spinner';
 
 interface PlayerViewProps {
@@ -22,7 +22,7 @@ const PlayerView: React.FC<PlayerViewProps> = ({ gameId, player, onExit }) => {
     return <div className="text-center text-2xl font-bold">Подключение к игре...</div>;
   }
 
-  const { phase, questions, currentQuestionIndex, answers } = gameState;
+  const { phase, questions, currentQuestionIndex, answers, quizName, quizDescription } = gameState;
   
   if (!questions || questions.length === 0) {
     return <WaitingScreen message="Ожидание вопросов от ведущего..." />;
@@ -47,7 +47,7 @@ const PlayerView: React.FC<PlayerViewProps> = ({ gameId, player, onExit }) => {
   const renderContent = () => {
     switch (phase) {
       case 'lobby':
-        return <WaitingScreen message="Вы в игре! Ожидаем начала от ведущего..." />;
+        return <LobbyScreen quizName={quizName} quizDescription={quizDescription} />;
       case 'question':
          if (!currentQuestion) return <WaitingScreen message="Ожидание вопроса..." />;
         if (hasAnswered) {
@@ -73,6 +73,23 @@ const PlayerView: React.FC<PlayerViewProps> = ({ gameId, player, onExit }) => {
     </div>
   );
 };
+
+const LobbyScreen: React.FC<{quizName?: string, quizDescription?: string}> = ({ quizName, quizDescription }) => (
+    <div className="text-center py-12 animate-fade-in">
+        <h2 className="text-3xl md:text-4xl font-black text-white mb-2">Добро пожаловать в викторину!</h2>
+        <p className="text-lg text-gray-400 mb-8">Скоро начнем. А пока, вот информация о предстоящей игре:</p>
+        
+        <div className="bg-gray-900/70 p-6 rounded-lg border border-gray-700 mb-8 text-left">
+            <h3 className="text-2xl font-bold text-indigo-300 mb-3">{quizName || 'Название викторины загружается...'}</h3>
+            <p className="text-gray-300 whitespace-pre-wrap">{quizDescription || 'Описание скоро появится...'}</p>
+        </div>
+
+        <div className="flex items-center justify-center">
+            <Spinner />
+            <p className="ml-4 text-xl text-white">Ожидаем начала от ведущего...</p>
+        </div>
+    </div>
+);
 
 const WaitingScreen: React.FC<{message: string}> = ({message}) => (
     <div className="text-center py-16">

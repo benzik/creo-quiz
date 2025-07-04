@@ -28,6 +28,10 @@ RUN echo 'import { defineConfig } from "vite";' > frontend-vite.config.js && \
     echo '  }' >> frontend-vite.config.js && \
     echo '});' >> frontend-vite.config.js
 
+# Cache busting
+ARG CACHE_BUSTER
+RUN echo "Cache buster: $CACHE_BUSTER"
+
 # Build the app from frontend directory
 RUN npx vite build --config frontend-vite.config.js
 

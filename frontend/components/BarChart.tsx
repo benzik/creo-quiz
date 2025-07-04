@@ -5,17 +5,17 @@ import CheckIcon from './icons/CheckIcon';
 interface BarChartProps {
   distribution: AnswerDistribution;
   options: string[];
-  correctAnswerIndex: number;
+  correctAnswer: number;
   totalPlayers: number;
 }
 
-const BarChart: React.FC<BarChartProps> = ({ distribution, options, correctAnswerIndex, totalPlayers }) => {
+const BarChart: React.FC<BarChartProps> = ({ distribution, options, correctAnswer, totalPlayers }) => {
   return (
     <div className="space-y-3">
       {options.map((option, index) => {
         const count = distribution[index] || 0;
         const percentage = totalPlayers > 0 ? (count / totalPlayers) * 100 : 0;
-        const isCorrect = index === correctAnswerIndex;
+        const isCorrect = index === correctAnswer;
 
         return (
           <div key={index} className="flex items-center gap-3">

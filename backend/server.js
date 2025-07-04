@@ -18,7 +18,8 @@ const require = createRequire(import.meta.url);
 const file = join('/usr/src/app/data', 'db.json');
 
 const adapter = new JSONFile(file);
-const defaultData = { questions: [], games: {} };
+// Обновленная структура данных по умолчанию
+const defaultData = { quizzes: [], games: {} };
 const db = new Low(adapter, defaultData);
 await db.read();
 
@@ -28,7 +29,7 @@ app.use(cors());
 app.use(express.json());
 
 // Health check endpoint for Docker
-app.get('/api/health', (req, res) => {
+app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 const server = http.createServer(app);
@@ -55,7 +56,7 @@ const emitGameState = (gameId) => {
 // --- API ROUTES ---
 
 // Admin Login
-app.post('/api/login', (req, res) => {
+app.post('/login', (req, res) => {
   const { password } = req.body;
   if (password === ADMIN_PASSWORD) {
     res.json({ success: true });
@@ -64,50 +65,107 @@ app.post('/api/login', (req, res) => {
   }
 });
 
-// Get all questions
-app.get('/questions', (req, res) => {
-  // Преобразование поля correctAnswer в correctAnswerIndex для фронтенда
-  const questions = db.data.questions.map(q => ({
-    ...q,
-    correctAnswerIndex: q.correctAnswer !== undefined ? q.correctAnswer : q.correctAnswerIndex
-  }));
-  res.json(questions);
+// --- QUIZ API ROUTES ---
+
+// Получить все викторины
+app.get('/quizzes', (req, res) => {
+  res.json(db.data.quizzes || []);
 });
 
-// Save all questions
-app.post('/questions', async (req, res) => {
-  const { questions } = req.body;
-  if (!Array.isArray(questions)) {
-    return res.status(400).json({ error: 'Invalid data format' });
+// Создать новую викторину
+app.post('/quizzes', async (req, res) => {
+  const { name, description } = req.body;
+  if (!name) {
+    return res.status(400).json({ error: 'Название викторины обязательно' });
   }
-  
-  // Преобразование поля correctAnswerIndex в correctAnswer для бэкенда
-  db.data.questions = questions.map(q => ({
-    ...q,
-    correctAnswer: q.correctAnswerIndex !== undefined ? q.correctAnswerIndex : (q.correctAnswer || 0)
-  }));
-  
+  const newQuiz = {
+    id: `quiz-${nanoid(10)}`,
+    name,
+    description: description || '',
+    questions: [],
+  };
+  db.data.quizzes.push(newQuiz);
   await db.write();
-  res.json({ success: true });
+  res.status(201).json(newQuiz);
 });
 
-// Create a new game
+// Обновить викторину (включая вопросы)
+app.put('/quizzes/:quizId', async (req, res) => {
+  const { quizId } = req.params;
+  const { name, description, questions } = req.body;
+  const quiz = db.data.quizzes.find(q => q.id === quizId);
+
+  if (!quiz) {
+    return res.status(404).json({ error: 'Викторина не найдена' });
+  }
+
+  if (name) quiz.name = name;
+  if (description) quiz.description = description;
+  if (questions) quiz.questions = questions; // Полная замена вопросов
+
+  await db.write();
+  res.json(quiz);
+});
+
+// Удалить викторину
+app.delete('/quizzes/:quizId', async (req, res) => {
+  const { quizId } = req.params;
+  const initialLength = db.data.quizzes.length;
+  db.data.quizzes = db.data.quizzes.filter(q => q.id !== quizId);
+
+  if (db.data.quizzes.length === initialLength) {
+    return res.status(404).json({ error: 'Викторина не найдена' });
+  }
+
+  await db.write();
+  res.status(204).send();
+});
+
+// Дублировать викторину
+app.post('/quizzes/:quizId/duplicate', async (req, res) => {
+  const { quizId } = req.params;
+  const originalQuiz = db.data.quizzes.find(q => q.id === quizId);
+
+  if (!originalQuiz) {
+    return res.status(404).json({ error: 'Викторина не найдена' });
+  }
+
+  const duplicatedQuiz = {
+    ...originalQuiz,
+    id: `quiz-${nanoid(10)}`,
+    name: `${originalQuiz.name} (Копия)`,
+  };
+
+  db.data.quizzes.push(duplicatedQuiz);
+  await db.write();
+  res.status(201).json(duplicatedQuiz);
+});
+
+// Create a new game from a quiz
 app.post('/games', async (req, res) => {
-    // If there are no questions in the db, try to initialize them from the request
-    // This is a fallback for the first run
-    if (db.data.questions.length === 0 && req.body.initialQuestions) {
-        db.data.questions = req.body.initialQuestions;
-    }
+  const { quizId } = req.body;
+  if (!quizId) {
+    return res.status(400).json({ error: 'Необходимо указать ID викторины' });
+  }
+
+  const quiz = db.data.quizzes.find(q => q.id === quizId);
+  if (!quiz) {
+    return res.status(404).json({ error: 'Викторина не найдена' });
+  }
 
   const newGame = {
     id: generateGameId(),
+    quizId: quiz.id,
+    quizName: quiz.name,
+    quizDescription: quiz.description,
     phase: 'lobby',
     players: [],
-    questions: db.data.questions, // Snapshot questions at game creation
+    questions: quiz.questions, // Снимок вопросов на момент создания игры
     currentQuestionIndex: 0,
     answers: {},
     answerDistribution: {},
   };
+
   db.data.games[newGame.id] = newGame;
   await db.write();
   res.status(201).json(newGame);
@@ -222,16 +280,15 @@ io.on('connection', (socket) => {
 // --- START SERVER ---
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, async () => {
-    // On first start, if db is empty, populate it with default questions
-    if (!db.data.questions || db.data.questions.length === 0) {
+    // При первом запуске, если база данных пуста, заполняем ее викториной по умолчанию
+    if (!db.data.quizzes || db.data.quizzes.length === 0) {
         try {
-            // Загружаем константы из локального CommonJS файла
-            const { QUIZ_QUESTIONS } = require('./constants.cjs');
-            db.data.questions = QUIZ_QUESTIONS;
+            const { DEFAULT_QUIZZES } = require('./constants.cjs');
+            db.data.quizzes = DEFAULT_QUIZZES;
             await db.write();
-            console.log('Database initialized with default questions.');
+            console.log('База данных инициализирована викториной по умолчанию.');
         } catch (e) {
-            console.error('Could not auto-initialize DB with default questions.', e);
+            console.error('Не удалось инициализировать БД викториной по умолчанию.', e);
         }
     }
   console.log(`Server is running on http://localhost:${PORT}`);

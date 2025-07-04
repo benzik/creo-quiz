@@ -90,10 +90,10 @@ const LandingView: React.FC<LandingViewProps> = ({ onJoinGame, onGoToAdmin }) =>
 
   return (
     <div className="w-full max-w-2xl mx-auto text-center bg-gray-800 p-8 rounded-2xl shadow-2xl animate-fade-in">
-      <h1 className="text-4xl font-black text-white mb-2 tracking-tight">VSL-Монтаж</h1>
-      <p className="text-2xl font-bold text-indigo-400 mb-6">Интерактивный Урок</p>
+      <h1 className="text-4xl font-black text-white mb-2 tracking-tight">CreoQuiz</h1>
+      <p className="text-2xl font-bold text-indigo-400 mb-6">Обучение, которое ощущается как игра.</p>
       <p className="text-lg text-gray-300 mb-8 max-w-xl mx-auto">
-        Обучающая игра для совместного прохождения. Присоединяйтесь к сессии, чтобы изучать материал в реальном времени.
+        CreoQuiz — это ваша площадка для творчества, где сложные темы становятся простыми, а обучение — захватывающим приключением. Создавайте уникальные квизы, бросайте вызов своей команде и открывайте новые горизонты знаний вместе!
       </p>
       <div className="flex justify-center">
         <button

@@ -1,4 +1,4 @@
-import { GameState, Question, Player } from '../types.ts';
+import { GameState, Player } from '../types.ts';
 
 // The base URL is now relative, as Nginx will proxy the requests.
 const API_URL = '/api';
@@ -20,35 +20,13 @@ export async function login(password: string): Promise<{ success: boolean }> {
     return handleResponse(response);
 }
 
-export async function getQuestions(): Promise<Question[]> {
-    const response = await fetch(`${API_URL}/questions`);
-    const data = await handleResponse(response);
-    
-    // Преобразование из формата бэкенда (correctAnswer) в формат фронтенда (correctAnswerIndex)
-    return data.map((q: any) => ({
-        ...q,
-        correctAnswerIndex: q.correctAnswer !== undefined ? q.correctAnswer : q.correctAnswerIndex
-    }));
-}
 
-export async function saveAllQuestions(questions: Question[]): Promise<{ success: boolean }> {
-    // Преобразование из формата фронтенда (correctAnswerIndex) в формат бэкенда (correctAnswer)
-    const backendQuestions = questions.map(q => ({
-        ...q,
-        correctAnswer: q.correctAnswerIndex
-    }));
-    
-    const response = await fetch(`${API_URL}/questions`, {
+
+export async function createGame(quizId: string): Promise<GameState> {
+    const response = await fetch(`${API_URL}/games`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ questions: backendQuestions }),
-    });
-    return handleResponse(response);
-}
-
-export async function createGame(): Promise<GameState> {
-    const response = await fetch(`${API_URL}/games`, {
-        method: 'POST'
+        body: JSON.stringify({ quizId }),
     });
     return handleResponse(response);
 }
